@@ -118,7 +118,7 @@ static const clockid_t CLOCK_ID = CLOCK_BOOTTIME;
 #if (KERNEL_MISSING_CLOCK_BOOTTIME_ALARM == TRUE)
 static const clockid_t CLOCK_ID_ALARM = CLOCK_BOOTTIME;
 #else
-static const clockid_t CLOCK_ID_ALARM = CLOCK_BOOTTIME_ALARM;
+//static const clockid_t CLOCK_ID_ALARM = CLOCK_BOOTTIME_ALARM;
 #endif
 
 // This mutex ensures that the |alarm_set|, |alarm_cancel|, and alarm callback
@@ -299,7 +299,7 @@ void alarm_cleanup(void) {
   thread_free(default_callback_thread);
   default_callback_thread = NULL;
 
-  timer_delete(wakeup_timer);
+  //timer_delete(wakeup_timer);
   timer_delete(timer);
   semaphore_free(alarm_expired);
   alarm_expired = NULL;
@@ -327,7 +327,7 @@ static bool lazy_initialize(void) {
   if (!timer_create_internal(CLOCK_ID, &timer)) goto error;
   timer_initialized = true;
 
-  if (!timer_create_internal(CLOCK_ID_ALARM, &wakeup_timer)) goto error;
+  //if (!timer_create_internal(CLOCK_ID_ALARM, &wakeup_timer)) goto error;
   wakeup_timer_initialized = true;
 
   alarm_expired = semaphore_new(0);
@@ -507,9 +507,11 @@ static void reschedule_root_alarm(void) {
 
     wakeup_time.it_value.tv_sec = (next->deadline / 1000);
     wakeup_time.it_value.tv_nsec = (next->deadline % 1000) * 1000000LL;
+#if 0
     if (timer_settime(wakeup_timer, TIMER_ABSTIME, &wakeup_time, NULL) == -1)
       LOG_ERROR(LOG_TAG, "%s unable to set wakeup timer: %s", __func__,
                 strerror(errno));
+#endif
   }
 
 done:
